@@ -48,7 +48,7 @@ class BackupCreator:
                     "messages": [{
                         "username": message.author.name,
                         "content": message.content,
-                        "created_at": time.mktime(message.created_at.timetuple())
+                        "created_at": message.created_at.timestamp()
                     } for message in await tchannel.history(limit=200).flatten()],
                     "webhooks": [{
                         "channel": str(webhook.channel.id),

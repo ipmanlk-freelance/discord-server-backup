@@ -6,6 +6,7 @@ import time
 import types
 import base64
 import requests
+import datetime
 
 
 class BackupRestorer:
@@ -108,7 +109,6 @@ class BackupRestorer:
 
         await self.guild.edit(
             name=self.data["name"],
-            region=discord.VoiceRegion(self.data["region"]),
             afk_channel=self.guild.get_channel(
                 self.id_translator.get(self.data["afk_channel"])),
             afk_timeout=self.data["afk_timeout"],
@@ -196,6 +196,18 @@ class BackupRestorer:
                     topic=self._translate_mentions(tchannel["topic"]),
                     nsfw=tchannel["nsfw"],
                 )
+
+                await asyncio.sleep(1)
+
+                print(f"Sending messages to text channel {created.id}")
+                for message in reversed(tchannel["messages"]):
+                    embed = discord.Embed()
+                    embed.timestamp = datetime.datetime.fromtimestamp(
+                        message["created_at"])
+                    embed.color = 0x0000ff
+                    embed.add_field(
+                        name=message["username"], value=message["content"], inline=False)
+                    await created.send(embed=embed)
             except Exception:
                 pass
 
@@ -299,7 +311,7 @@ class BackupRestorer:
             ("settings", self._load_settings),
             ("bans", self._load_bans),
             ("members", self._load_members),
-            ("roles", self._load_role_permissions)
+            ("roles", self._load_role_permissions),
         ]
         for option, coro in steps:
             if self.options.get(option):

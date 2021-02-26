@@ -4,6 +4,8 @@ import asyncio
 import json
 import time
 import types
+import base64
+import requests
 
 
 class BackupRestorer:
@@ -100,17 +102,21 @@ class BackupRestorer:
 
     async def _load_settings(self):
         print(f"Loading settings on {self.guild.id}")
+
+        # grab server icon
+        server_icon = requests.get(self.data["icon_url"]).content
+
         await self.guild.edit(
             name=self.data["name"],
-            # region=discord.VoiceRegion(self.data["region"]),
+            region=discord.VoiceRegion(self.data["region"]),
             afk_channel=self.guild.get_channel(
                 self.id_translator.get(self.data["afk_channel"])),
             afk_timeout=self.data["afk_timeout"],
-            # verification_level=discord.VerificationLevel(self.data["verification_level"]),
+
             system_channel=self.guild.get_channel(
                 self.id_translator.get(self.data["system_channel"])),
-            reason=self.reason
-        )
+            reason=self.reason,
+            icon=server_icon)
 
     async def _load_roles(self):
         print(f"Loading roles on {self.guild.id}")

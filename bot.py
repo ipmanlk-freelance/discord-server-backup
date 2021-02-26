@@ -1,39 +1,45 @@
 import discord
 from util.backup import BackupCreator
 from util.restore import BackupRestorer
-from datetime import datetime
+from discord.ext import commands
+from pathlib import Path
+import json
 
+# load config file
+with open(Path("setup/config.json")) as f:
+    config = json.load(f)
 
-class DiscordClient(discord.Client):
-    async def on_ready(self):
-        print('Logged on as {0}!'.format(self.user))
-
-    async def on_message(self, message):
-        if (message.author.bot):
-            return
-
-        handler = BackupRestorer(bot=self)
-        backup = await handler.restore(guild=message.guild, loader=self.user)
-
-        # handler = BackupCreator(bot=self.user, guild=message.guild)
-        # backup = await handler.create()
-
-        # embedVar = discord.Embed(
-        #     color=0x00ff00)
-        # embedVar.timestamp = datetime.utcnow()
-        # embedVar.add_field(
-        #     name="David", value="Hello, how are you doing?", inline=False)
-        # await message.channel.send(embed=embedVar)
-
-        # embedVar = discord.Embed(color=0x00ff00)
-        # embedVar.timestamp = datetime.utcnow()
-        # embedVar.add_field(
-        #     name="Ann", value="I'm good", inline=False)
-
-        # await message.channel.send(embed=embedVar)
-
-
+# setup required intents
 intents = discord.Intents.default()
 intents.members = True
-client = DiscordClient(intents=intents)
-client.run("ODE0MTk0NTAyMjM0NjY5MDY5.YDaTuA.yyw-Or48vxZfprZgRyPsADV8K28")
+
+# create new discord.ext bot object with given prefix and intents
+bot = commands.Bot(command_prefix=config["PREFIX"], intents=intents)
+
+# listen for events and commands
+
+
+@bot.event
+async def on_ready():
+    print('Bot is ready. Logged on as {0}!'.format(bot.user))
+
+
+@bot.command(name="backup")
+async def backup(ctx):
+    if (ctx.guild.owner.id != ctx.author.id):
+        await ctx.message.reply("You're not the owner of this server!.")
+        return
+    bc = BackupCreator(bot=bot.user, guild=ctx.guild,
+                       response_channel=ctx.channel)
+    await bc.create()
+
+
+@bot.command(name="restore")
+async def backup(ctx):
+    if (ctx.guild.owner.id != ctx.author.id):
+        await ctx.message.reply("You're not the owner of this server!.")
+        return
+    br = BackupRestorer(bot=bot)
+    await br.restore(guild=ctx.guild, loader=bot.user)
+
+bot.run(config["TOKEN"])

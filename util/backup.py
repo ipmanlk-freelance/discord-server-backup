@@ -8,10 +8,11 @@ from pathlib import Path
 
 
 class BackupCreator:
-    def __init__(self, bot, guild):
+    def __init__(self, bot, guild, response_channel=None):
         self.bot = bot
         self.guild = guild
         self.data = {}
+        self.response_channel = response_channel
 
     @staticmethod
     def _overwrites_to_json(overwrites):
@@ -164,8 +165,12 @@ class BackupCreator:
             except Exception:
                 traceback.print_exc()
 
-        with open("data/backup.json", "w") as fp:
+        with open(Path("data/backup.json"), "w") as fp:
             json.dump(self.data, fp)
+
+        if (self.response_channel != None):
+            await self.response_channel.send(
+                "✅ **Backup of this server has been created.** ✅")
 
     def __dict__(self):
         return self.data

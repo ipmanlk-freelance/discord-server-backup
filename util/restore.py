@@ -7,11 +7,12 @@ import types
 import base64
 import requests
 import datetime
+from pathlib import Path
 
 
 class BackupRestorer:
     def __init__(self, bot):
-        with open("data/backup.json") as backup:
+        with open(Path("data/backup.json")) as backup:
             self.data = json.load(backup)
         self.bot = bot
         self.id_translator = {}
@@ -320,4 +321,7 @@ class BackupRestorer:
                 except Exception:
                     traceback.print_exc()
 
-        print(f"Finished loading backup on {self.guild.id}")
+        print("------------------------------------------------------------")
+
+        print(
+            f"Congratulations!. Backup restore on server {self.guild.id} has been completed!.")

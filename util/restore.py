@@ -202,6 +202,8 @@ class BackupRestorer:
 
                 print(f"Sending messages to text channel {created.id}")
                 for message in reversed(tchannel["messages"]):
+                    if (message["author_id"] == self.bot.user.id):
+                        continue
                     embed = discord.Embed()
                     embed.timestamp = datetime.datetime.fromtimestamp(
                         message["created_at"])

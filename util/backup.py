@@ -49,6 +49,7 @@ class BackupCreator:
                     "slowmode_delay": tchannel.slowmode_delay,
                     "nsfw": tchannel.is_nsfw(),
                     "messages": [{
+                        "author_id": message.author.id,
                         "username": message.author.name,
                         "content": message.content,
                         "created_at": message.created_at.timestamp()

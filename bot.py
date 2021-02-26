@@ -1,5 +1,6 @@
 import discord
 from backup import BackupCreator
+from restore import BackupRestorer
 from datetime import datetime
 
 
@@ -11,8 +12,11 @@ class DiscordClient(discord.Client):
         if (message.author.bot):
             return
 
-        handler = BackupCreator(bot=self.user, guild=message.guild)
-        backup = await handler.create()
+        handler = BackupRestorer(bot=self)
+        backup = await handler.restore(guild=message.guild, loader=self.user)
+
+        # handler = BackupCreator(bot=self.user, guild=message.guild)
+        # backup = await handler.create()
 
         # embedVar = discord.Embed(
         #     color=0x00ff00)

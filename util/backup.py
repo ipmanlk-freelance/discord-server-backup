@@ -3,6 +3,8 @@ import traceback
 import asyncio
 import json
 import time
+import os
+from pathlib import Path
 
 
 class BackupCreator:
@@ -162,7 +164,7 @@ class BackupCreator:
             except Exception:
                 traceback.print_exc()
 
-        with open("backup.json", 'w') as fp:
+        with open("data/backup.json", "w") as fp:
             json.dump(self.data, fp)
 
     def __dict__(self):

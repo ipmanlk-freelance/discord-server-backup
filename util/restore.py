@@ -11,7 +11,7 @@ import datetime
 
 class BackupRestorer:
     def __init__(self, bot):
-        with open("backup.json") as backup:
+        with open("data/backup.json") as backup:
             self.data = json.load(backup)
         self.bot = bot
         self.id_translator = {}

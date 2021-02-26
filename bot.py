@@ -1,6 +1,6 @@
 import discord
-from backup import BackupCreator
-from restore import BackupRestorer
+from util.backup import BackupCreator
+from util.restore import BackupRestorer
 from datetime import datetime
 
 

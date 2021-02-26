@@ -2,6 +2,7 @@ import discord
 import traceback
 import asyncio
 import json
+import time
 
 
 class BackupCreator:
@@ -34,6 +35,7 @@ class BackupCreator:
 
         for tchannel in self.guild.text_channels:
             try:
+
                 self.data["text_channels"].append({
                     "name": tchannel.name,
                     "position": tchannel.position,
@@ -43,8 +45,11 @@ class BackupCreator:
                     "topic": tchannel.topic,
                     "slowmode_delay": tchannel.slowmode_delay,
                     "nsfw": tchannel.is_nsfw(),
-                    # "messages": channel.history(limit=200).flatten(),
-                    "messages": [],
+                    "messages": [{
+                        "username": message.author.name,
+                        "content": message.content,
+                        "created_at": time.mktime(message.created_at.timetuple())
+                    } for message in await tchannel.history(limit=200).flatten()],
                     "webhooks": [{
                         "channel": str(webhook.channel.id),
                         "name": webhook.name,

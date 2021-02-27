@@ -22,9 +22,11 @@ class BackupRestorer:
             "settings": True,
             "bans": True,
             "members": True,
-            "roles": True
+            "roles": True,
+            "messages": True
         }
         self.semaphore = asyncio.Semaphore(2)
+        self.message_holder = []
 
     async def _overwrites_from_json(self, json):
         overwrites = {}
@@ -199,18 +201,20 @@ class BackupRestorer:
                 )
 
                 await asyncio.sleep(1)
-
-                print(f"Sending messages to text channel {created.id}")
-                for message in reversed(tchannel["messages"]):
-                    if (message["author_id"] == self.bot.user.id):
-                        continue
-                    embed = discord.Embed()
-                    embed.timestamp = datetime.datetime.fromtimestamp(
-                        message["created_at"])
-                    embed.color = 0x0000ff
-                    embed.add_field(
-                        name=message["username"], value=message["content"], inline=False)
-                    await created.send(embed=embed)
+                # store to later post
+                self.message_holder.append(
+                    [created, reversed(tchannel["messages"])])
+                # print(f"Sending messages to text channel {created.id}")
+                # for message in reversed(tchannel["messages"]):
+                #     if (message["author_id"] == self.bot.user.id):
+                #         continue
+                #     embed=discord.Embed()
+                #     embed.timestamp=datetime.datetime.fromtimestamp(
+                #         message["created_at"])
+                #     embed.color=0x0000ff
+                #     embed.add_field(
+                #         name=message["username"], value=message["content"], inline=False)
+                #     await created.send(embed=embed)
             except Exception:
                 pass
 
@@ -296,6 +300,71 @@ class BackupRestorer:
 
         await self.run_tasks(tasks)
 
+    async def _load_messages(self):
+        for m in self.message_holder:
+            channel = m[0]
+            messages = m[1]
+
+            print(f"Restoring messages in channel: {channel.id}. Be patient.")
+
+            for message in messages:
+
+                if (message["author_id"] == self.bot.user.id):
+                    continue
+
+                if message["type"] == "text":
+                    if ((message["content"]).strip() == ""):
+                        continue
+
+                    embed = discord.Embed()
+                    embed.timestamp = datetime.datetime.fromtimestamp(
+                        message["created_at"])
+                    embed.color = 0x0000ff
+                    embed.add_field(
+                        name=message["username"], value=message["content"], inline=False)
+                    await channel.send(embed=embed)
+
+                if message["type"] == "attachment":
+                    await channel.send(message["url"])
+
+                if message["type"] == "embed":
+                    embed = discord.Embed()
+
+                    if message["colour"] != None:
+                        embed.color = message["colour"]
+
+                    if message["title"] != None:
+                        embed.title = message["title"]
+
+                    if message["description"] != None:
+                        embed.description = message["description"]
+
+                    if message["image"] != None:
+                        embed.set_image(message["image"])
+
+                    if message["thumbnail"] != None:
+                        embed.set_thumbnail(url=message["thumbnail"])
+
+                    if message["author"] != None and message["author"]["name"] != None:
+
+                        embed.set_author(
+                            name=message["author"]["name"],
+                            url=message["author"]["url"] if message["author"]["url"] != None else discord.Embed.Empty,
+                            icon_url=message["author"]["icon_url"] if message["author"]["icon_url"] != None else discord.Embed.Empty
+                        )
+
+                    if message["footer"] != None and message["footer"]["text"] != None:
+                        embed.set_footer(
+                            text=message["footer"]["text"],
+                            icon_url=message["footer"]["icon_url"] if message["footer"]["icon_url"] != None else discord.Embed.Empty,
+                        )
+
+                    for field in message["fields"]:
+                        embed.add_field(
+                            name=field["name"], value=field["value"], inline=field["inline"])
+
+                    await channel.send(embed=embed)
+
     async def restore(self, guild, loader: discord.User):
         self.guild = guild
         self.loader = loader
@@ -315,6 +384,8 @@ class BackupRestorer:
             ("bans", self._load_bans),
             ("members", self._load_members),
             ("roles", self._load_role_permissions),
+            ("messages", self._load_messages),
+
         ]
         for option, coro in steps:
             if self.options.get(option):

@@ -5,6 +5,7 @@ import json
 import time
 import os
 from pathlib import Path
+from datetime import datetime
 
 
 class BackupCreator:
@@ -216,7 +217,9 @@ class BackupCreator:
             except Exception:
                 traceback.print_exc()
 
-        with open(Path("data/backup.json"), "w") as fp:
+        filename = f"{str(self.guild.id)}-{datetime.today().strftime('%Y-%m-%d %H:%M:%S')}.json"
+
+        with open(Path(f"data/{filename}"), "w") as fp:
             json.dump(self.data, fp)
 
         if (self.response_channel != None):

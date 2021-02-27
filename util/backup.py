@@ -86,6 +86,14 @@ class BackupCreator:
                                 }
                             messages.append(embed_data)
 
+                    for attachment in message.attachments:
+                        messages.append({
+                            "author_id": message.author.id,
+                            "username": message.author.name,
+                            "url": attachment.url,
+                            "type": "attachment"
+                        })
+
                 self.data["text_channels"].append({
                     "name": tchannel.name,
                     "position": tchannel.position,

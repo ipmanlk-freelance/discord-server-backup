@@ -305,15 +305,14 @@ class BackupRestorer:
             channel = m[0]
             messages = m[1]
 
-            print(f"Restoring messages in channel: {channel.id}. Be patient.")
+            print(f"Restoring messages on channel: {channel.id}. Be patient.")
 
             for message in messages:
-
                 if (message["author_id"] == self.bot.user.id):
                     continue
 
                 if message["type"] == "text":
-                    if ((message["content"]).strip() == ""):
+                    if ((message["content"]).strip() == "") or (len(message["content"]) > 1024):
                         continue
 
                     embed = discord.Embed()

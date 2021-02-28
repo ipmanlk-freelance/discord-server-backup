@@ -218,8 +218,10 @@ class BackupCreator:
                 traceback.print_exc()
 
         filename = f"{str(self.guild.id)}-{datetime.today().strftime('%Y-%m-%d %H:%M:%S')}.json"
+        data_folder = Path("data")
+        output_file = data_folder / filename
 
-        with open(Path(f"data/{filename}"), "w") as fp:
+        with open(output_file, "w") as fp:
             json.dump(self.data, fp)
 
         if (self.response_channel != None):

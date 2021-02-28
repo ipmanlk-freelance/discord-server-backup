@@ -12,7 +12,10 @@ from pathlib import Path
 
 class BackupRestorer:
     def __init__(self, bot):
-        with open(Path("data/backup.json")) as backup:
+        data_folder = Path("data")
+        backup_file = data_folder / "backup.json"
+
+        with open(backup_file) as backup:
             self.data = json.load(backup)
         self.bot = bot
         self.id_translator = {}

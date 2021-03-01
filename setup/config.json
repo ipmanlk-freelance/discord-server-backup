@@ -1,4 +1,8 @@
 {
   "PREFIX": "!",
-  "TOKEN": "ODE0MTk0NTAyMjM0NjY5MDY5.YDaTuA.yyw-Or48vxZfprZgRyPsADV8K28"
+  "TOKEN": "ODE0MTk0NTAyMjM0NjY5MDY5.YDaTuA.Ip7zeB5vCPn4UEBwaHh25pdZhR4",
+  "ALLOWED_MEMBER_IDS": [
+    "id1",
+    "id2"
+  ]
 }

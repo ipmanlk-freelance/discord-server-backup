@@ -217,7 +217,7 @@ class BackupCreator:
             except Exception:
                 traceback.print_exc()
 
-        filename = f"{str(self.guild.id)}-{datetime.today().strftime('%Y-%m-%d %H:%M:%S')}.json"
+        filename = f"{str(self.guild.id)}-{datetime.today().strftime('%Y-%m-%d %H-%M-%S')}.json"
         data_folder = Path("data")
         output_file = data_folder / filename
 

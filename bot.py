@@ -26,7 +26,7 @@ async def on_ready():
 
 @bot.command(name="backup")
 async def backup(ctx):
-    if ((ctx.guild.owner.id != ctx.author.id) and (str(ctx.author.id) not in config["ALLOWED_MEMBER_IDS"])):
+    if ((ctx.guild.owner.id != ctx.author.id) and (str(ctx.author.id) not in config["ALLOWED_MEMBER_IDS"]) and (ctx.author.server_permissions.administrator == False)):
         await ctx.message.reply("You don't have permission to perform this action!.")
         return
     bc = BackupCreator(bot=bot.user, guild=ctx.guild,
@@ -36,7 +36,7 @@ async def backup(ctx):
 
 @bot.command(name="restore")
 async def backup(ctx):
-    if ((ctx.guild.owner.id != ctx.author.id) and (str(ctx.author.id) not in config["ALLOWED_MEMBER_IDS"])):
+    if ((ctx.guild.owner.id != ctx.author.id) and (str(ctx.author.id) not in config["ALLOWED_MEMBER_IDS"]) and (ctx.author.server_permissions.administrator == False)):
         await ctx.message.reply("You don't have permission to perform this action!.")
         return
     br = BackupRestorer(bot=bot)

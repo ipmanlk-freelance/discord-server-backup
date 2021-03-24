@@ -342,7 +342,7 @@ class BackupRestorer:
                         embed.description = message["description"]
 
                     if message["image"] != None:
-                        embed.set_image(message["image"])
+                        embed.set_image(url=message["image"])
 
                     if message["thumbnail"] != None:
                         embed.set_thumbnail(url=message["thumbnail"])

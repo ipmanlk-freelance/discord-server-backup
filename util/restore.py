@@ -189,14 +189,20 @@ class BackupRestorer:
         print(f"Loading text channels on {self.guild.id}")
         for tchannel in self.data["text_channels"]:
             try:
-                created = await self.guild.create_text_channel(
-                    name=tchannel["name"],
-                    overwrites=await self._overwrites_from_json(tchannel["overwrites"]),
-                    category=discord.Object(
-                        self.id_translator.get(tchannel["category"])),
-                    reason=self.reason
-                )
-
+                if tchannel["category"] != None:
+                    created = await self.guild.create_text_channel(
+                        name=tchannel["name"],
+                        overwrites=await self._overwrites_from_json(tchannel["overwrites"]),
+                        category=discord.Object(
+                            self.id_translator.get(tchannel["category"])),
+                        reason=self.reason
+                    )
+                else:
+                    created = await self.guild.create_text_channel(
+                        name=tchannel["name"],
+                        overwrites=await self._overwrites_from_json(tchannel["overwrites"]),
+                        reason=self.reason
+                    )
                 self.id_translator[tchannel["id"]] = created.id
                 await created.edit(
                     topic=self._translate_mentions(tchannel["topic"]),

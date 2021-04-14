@@ -42,50 +42,21 @@ class BackupCreator:
                 messages = []
 
                 for message in await tchannel.history(limit=200).flatten():
-                    messages.append({
+
+                    msg = {
                         "author_id": message.author.id,
                         "username": message.author.name,
                         "content": message.content,
                         "created_at": message.created_at.timestamp(),
-                        "type": "text"
-                    })
+                        "type": "text",
+                        "embeds": []
+                    }
 
                     if (len(message.embeds) > 0):
                         for embed in message.embeds:
-                            fields = []
-                            if (len(embed.fields) > 0):
-                                for field in embed.fields:
-                                    fields.append({
-                                        "name": field.name,
-                                        "value": field.value,
-                                        "inline": field.inline
-                                    })
+                            msg["embeds"].append(embed.to_dict())
 
-                            embed_data = {
-                                "author_id": message.author.id,
-                                "username": message.author.name,
-                                "colour": embed.colour.value if embed.colour != discord.Embed.Empty else None,
-                                "title": embed.title if embed.title != discord.Embed.Empty else None,
-                                "description": embed.description if embed.description != discord.Embed.Empty else None,
-                                "image": embed.image.url if embed.image.url != discord.Embed.Empty else None,
-                                "thumbnail": embed.thumbnail.url if embed.thumbnail.url != discord.Embed.Empty else None,
-                                "created_at": message.created_at.timestamp(),
-                                "fields": fields,
-                                "footer": None,
-                                "type": "embed",
-                                "author": {
-                                    "name": embed.author.name if embed.author.name != discord.Embed.Empty else None,
-                                    "url": embed.author.url if embed.author.url != discord.Embed.Empty else None,
-                                    "icon_url": embed.author.icon_url if embed.author.icon_url != discord.Embed.Empty else None,
-                                }
-                            }
-
-                            if (embed.footer != discord.Embed.Empty):
-                                embed_data["footer"] = {
-                                    "text": embed.footer.text if embed.footer.text != discord.Embed.Empty else None,
-                                    "icon_url": embed.footer.icon_url if embed.footer.icon_url != discord.Embed.Empty else None,
-                                }
-                            messages.append(embed_data)
+                    messages.append(msg)
 
                     for attachment in message.attachments:
                         messages.append({

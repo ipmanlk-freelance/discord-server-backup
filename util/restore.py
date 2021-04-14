@@ -1,3 +1,4 @@
+from pathlib import Path
 import discord
 import traceback
 import asyncio
@@ -7,7 +8,6 @@ import types
 import base64
 import requests
 import datetime
-from pathlib import Path
 
 
 class BackupRestorer:
@@ -335,43 +335,10 @@ class BackupRestorer:
                 if message["type"] == "attachment":
                     await channel.send(message["url"])
 
-                if message["type"] == "embed":
-                    embed = discord.Embed()
-
-                    if message["colour"] != None:
-                        embed.color = message["colour"]
-
-                    if message["title"] != None:
-                        embed.title = message["title"]
-
-                    if message["description"] != None:
-                        embed.description = message["description"]
-
-                    if message["image"] != None:
-                        embed.set_image(url=message["image"])
-
-                    if message["thumbnail"] != None:
-                        embed.set_thumbnail(url=message["thumbnail"])
-
-                    if message["author"] != None and message["author"]["name"] != None:
-
-                        embed.set_author(
-                            name=message["author"]["name"],
-                            url=message["author"]["url"] if message["author"]["url"] != None else discord.Embed.Empty,
-                            icon_url=message["author"]["icon_url"] if message["author"]["icon_url"] != None else discord.Embed.Empty
-                        )
-
-                    if message["footer"] != None and message["footer"]["text"] != None:
-                        embed.set_footer(
-                            text=message["footer"]["text"],
-                            icon_url=message["footer"]["icon_url"] if message["footer"]["icon_url"] != None else discord.Embed.Empty,
-                        )
-
-                    for field in message["fields"]:
-                        embed.add_field(
-                            name=field["name"], value=field["value"], inline=field["inline"])
-
-                    await channel.send(embed=embed)
+                if ("embeds" in message):
+                    for d in message["embeds"]:
+                        embed = discord.Embed.from_dict(d)
+                        await channel.send(embed=embed)
 
     async def restore(self, guild, loader: discord.User):
         self.guild = guild

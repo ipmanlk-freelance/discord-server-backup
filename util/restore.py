@@ -8,12 +8,12 @@ import types
 import base64
 import requests
 import datetime
+import glob
 
 
 class BackupRestorer:
     def __init__(self, bot):
-        data_folder = Path("data")
-        backup_file = data_folder / "backup.json"
+        backup_file = self.get_latest_file()
 
         with open(backup_file) as backup:
             self.data = json.load(backup)
@@ -30,6 +30,10 @@ class BackupRestorer:
         }
         self.semaphore = asyncio.Semaphore(2)
         self.message_holder = []
+
+    def get_latest_file(self):
+        files = Path("data").glob("*")
+        return max(files, key=lambda x: x.stat().st_ctime)
 
     async def _overwrites_from_json(self, json):
         overwrites = {}

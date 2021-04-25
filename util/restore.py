@@ -114,19 +114,29 @@ class BackupRestorer:
     async def _load_settings(self):
         print(f"Loading settings on {self.guild.id}")
 
-        # grab server icon
-        server_icon = requests.get(self.data["icon_url"]).content
+        if (self.data["icon_url"].strip() == ""):
+            await self.guild.edit(
+                name=self.data["name"],
+                afk_channel=self.guild.get_channel(
+                    self.id_translator.get(self.data["afk_channel"])),
+                afk_timeout=self.data["afk_timeout"],
 
-        await self.guild.edit(
-            name=self.data["name"],
-            afk_channel=self.guild.get_channel(
-                self.id_translator.get(self.data["afk_channel"])),
-            afk_timeout=self.data["afk_timeout"],
+                system_channel=self.guild.get_channel(
+                    self.id_translator.get(self.data["system_channel"])),
+                reason=self.reason)
+        else:
+            # grab server icon
+            server_icon = requests.get(self.data["icon_url"]).content
+            await self.guild.edit(
+                name=self.data["name"],
+                afk_channel=self.guild.get_channel(
+                    self.id_translator.get(self.data["afk_channel"])),
+                afk_timeout=self.data["afk_timeout"],
 
-            system_channel=self.guild.get_channel(
-                self.id_translator.get(self.data["system_channel"])),
-            reason=self.reason,
-            icon=server_icon)
+                system_channel=self.guild.get_channel(
+                    self.id_translator.get(self.data["system_channel"])),
+                reason=self.reason,
+                icon=server_icon)
 
     async def _load_roles(self):
         print(f"Loading roles on {self.guild.id}")
